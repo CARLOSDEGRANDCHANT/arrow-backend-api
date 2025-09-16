@@ -1,7 +1,7 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
+const bcrypt = require('bcrypt');
+
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     /**
@@ -17,13 +17,54 @@ module.exports = (sequelize, DataTypes) => {
     id: {
       type: DataTypes.NUMBER,
       primaryKey: true
-
     },
     name: DataTypes.STRING,
-    email: DataTypes.STRING,
-    phone: DataTypes.STRING,
-    code: DataTypes.STRING,
-    password: DataTypes.STRING,
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+      validate: {
+        isEmail: {
+          args: true,
+          msg: "Por favor ingrese un email valido"
+        }
+      }
+    },
+    phone: {
+      type: DataTypes.STRING,
+      allowNull: false, 
+      unique: true
+    },
+    code: {
+      type: DataTypes.STRING,
+      unique: true,
+      allowNull: false
+    },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        len: {
+          args: [8, 255],
+          msg: "La contraseña debe contener al menos 8 caracteres."
+        },
+        hasNumber(value){
+          if (!/\d/.test(value)) {
+            throw new Error('La contraseña debe contener un numero.');
+          }
+        },
+        hasLowercase(value) {
+          if (!/[a-z]/.test(value)) {
+            throw new Error('Password must contain at least one lowercase letter.');
+          }
+        },
+        hasUppercase(value) {
+          if (!/[A-Z]/.test(value)) {
+            throw new Error('Password must contain at least one uppercase letter.');
+          }
+        }
+      }
+    },
     role: {
       type: DataTypes.ENUM('admin', 'agent'),
       defaultValue: 'agent'
@@ -32,5 +73,12 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'User',
   });
+
+  // Password hashing
+  User.beforeCreate(async (user, options) => {
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(user.password, salt);
+  });
+
   return User;
 };
