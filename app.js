@@ -11,13 +11,14 @@ const PORT = 3000;
 // ==Setup==
 const app = express();
 
+
 // ==Middleware==
 app.use(express.json());
 // Auth Routes
 app.use(authRouter);
 
 
-// Connection to DB
+// ==Connection to DB==
 const connectDb = async () => {
     console.log('Checking db connection...');
     try{

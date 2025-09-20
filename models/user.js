@@ -28,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
       validate: {
         isEmail: {
           args: true,
-          msg: "Por favor ingrese un email valido"
+          msg: "Por favor ingrese un email valido."
         }
       }
     },
@@ -57,12 +57,12 @@ module.exports = (sequelize, DataTypes) => {
         },
         hasLowercase(value) {
           if (!/[a-z]/.test(value)) {
-            throw new Error('Password must contain at least one lowercase letter.');
+            throw new Error('La contrsaseña debe contener una letra minuscula..');
           }
         },
         hasUppercase(value) {
           if (!/[A-Z]/.test(value)) {
-            throw new Error('Password must contain at least one uppercase letter.');
+            throw new Error('La contrsaseña debe contener una letra mayuscula.');
           }
         }
       }
